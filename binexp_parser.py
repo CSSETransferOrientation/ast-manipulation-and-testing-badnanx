@@ -83,16 +83,36 @@ class BinOpAst():
         Reduce additive identities
         x + 0 = x
         """
-        # IMPLEMENT ME!
-        pass
+        # IMPLEMENT ME! Done
+        if self.type == NodeType.operator and self.val == '+':
+            if self.left and self.left.type == NodeType.number and self.left.val == '0':
+                self.val = self.right.val
+                self.type = self.right.type
+                self.left = self.right.left
+                self.right = self.right.right
+            elif self.right and self.right.type == NodeType.number and self.right.val == '0':
+                self.val = self.left.val
+                self.type = self.left.type
+                self.right = self.left.right  # This should be self.right = self.left.right after reassigning val
+                self.left = self.left.left  # This should be self.left = self.left.left after reassigning val
                         
     def multiplicative_identity(self):
         """
         Reduce multiplicative identities
         x * 1 = x
         """
-        # IMPLEMENT ME!
-        pass
+        # IMPLEMENT ME! Done
+        if self.type == NodeType.operator and self.val == '*':
+            if self.left and self.left.type == NodeType.number and self.left.val == '1':
+                self.val = self.right.val
+                self.type = self.right.type
+                self.left = self.right.left
+                self.right = self.right.right
+            elif self.right and self.right.type == NodeType.number and self.right.val == '1':
+                self.val = self.left.val
+                self.type = self.left.type
+                self.left = self.left.left
+                self.right = self.left.right if self.left else False  # Ensure left isn't False before accessing .right
     
     
     def mult_by_zero(self):
@@ -126,7 +146,19 @@ class BinOpAst():
         self.multiplicative_identity()
         self.mult_by_zero()
         self.constant_fold()
+        return self #Return self after simplification
 
+# Test cases
+class TestBinOpAst(unittest.TestCase):
+    def test_additive_identity(self):
+        ast = BinOpAst(['+', '1', '0'])
+        simplified_ast = ast.simplify_binops()
+        self.assertEqual(simplified_ast.prefix_str(), '1')
+
+    def test_multiplicative_identity(self):
+        ast = BinOpAst(['*', '2', '1'])
+        simplified_ast = ast.simplify_binops()
+        self.assertEqual(simplified_ast.prefix_str(), '2')
 
 if __name__ == "__main__":
     unittest.main()
