@@ -84,6 +84,7 @@ class BinOpAst():
         x + 0 = x
         """
         # IMPLEMENT ME! Done
+        # ;;> This doesn't recur
         if self.type == NodeType.operator and self.val == '+':
             if self.left and self.left.type == NodeType.number and self.left.val == '0':
                 self.val = self.right.val
@@ -102,6 +103,7 @@ class BinOpAst():
         x * 1 = x
         """
         # IMPLEMENT ME! Done
+        # ;;> This doesn't recur
         if self.type == NodeType.operator and self.val == '*':
             if self.left and self.left.type == NodeType.number and self.left.val == '1':
                 self.val = self.right.val
@@ -150,10 +152,17 @@ class BinOpAst():
 
 # Test cases
 class TestBinOpAst(unittest.TestCase):
+    # ;;> This is a good start, but really sparse on tests and doesn't use the file based tested required in the spec
     def test_additive_identity(self):
         ast = BinOpAst(['+', '1', '0'])
         simplified_ast = ast.simplify_binops()
         self.assertEqual(simplified_ast.prefix_str(), '1')
+
+    def test_additive_identity(self):
+        ast = BinOpAst(['+', '1', '+', '0', '10'])
+        simplified_ast = ast.simplify_binops()
+        self.assertEqual(simplified_ast.prefix_str(), '+ 1 10')
+
 
     def test_multiplicative_identity(self):
         ast = BinOpAst(['*', '2', '1'])
